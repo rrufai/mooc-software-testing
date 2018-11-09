@@ -8,7 +8,7 @@ public class RomanNumeral {
     private static Map<Character, Integer> map;
 
     static {
-        map = new HashMap<Character, Integer>();
+        map = new HashMap<>();
         map.put('I', 1);
         map.put('V', 5);
         map.put('X', 10);
@@ -19,16 +19,30 @@ public class RomanNumeral {
     }
 
     public int convert(String s) {
-
+        int maxRepeat = 0;
         int convertedNumber = 0;
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             int currentNumber = map.get(s.charAt(i));
-            int next = i+1 < s.length() ? map.get(s.charAt(i+1)) : 0;
-
-            if(currentNumber >= next)
+            int next = i + 1 < s.length() ? map.get(s.charAt(i + 1)) : 0;
+            if (currentNumber == next) {
                 convertedNumber += currentNumber;
-            else
-                convertedNumber -= currentNumber;
+                maxRepeat++;
+                if (maxRepeat > 2)
+                    throw new IllegalArgumentException(
+                            String.format("Invalid input: %s", s));
+            } else {
+                if (currentNumber > next)
+                    convertedNumber += currentNumber;
+                else {
+                    convertedNumber -= currentNumber;
+                    if (maxRepeat > 0) {
+                        throw new IllegalArgumentException(
+                                String.format("Invalid subtractive sequence: %s", s));
+                    }
+                }
+
+                maxRepeat = 0;
+            }
         }
 
         return convertedNumber;
